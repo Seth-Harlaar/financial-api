@@ -13,21 +13,18 @@ An API written in JavaScript for keeping records of transactions on a users debi
 ### API reference
 ------------------------------------------------------------------------------------------
 
+**All api requests must be prefeced by the /api/ endpoint.**
+
 #### Creating new transaction records
 
 <details>
  <summary><code>POST</code> <code><b>/transactions/multiple</b></code> </summary>
 
 ##### Parameters
-<!--
-    const {tranDate, dest, debit, credit, balance, category } = tranData;
- -->
 
-> | name | type | data type | description |
-> | ---- | ---- | --------- | ----------- |
-> | transactions |  required | JSON object | An array of JSON objects representing each transaction to be added to the database |
-
-<!-- [{tranDate: "2023-01-30",destination:"ESSO CIRCLE K",debit:23.48, credit: null, balance: 640.54, category: "gas"},{1|2023-01-23|MOBILE DEPOSIT||693.24|1016.53|work}] -->
+> | name | type | data type | request location | description |
+> | ---- | ---- | --------- | ---------------- |------------ |
+> | transactions |  required | JSON object | body | An array of JSON objects representing each transaction to be added to the database |
 
 ##### Responses
 
@@ -61,9 +58,61 @@ An API written in JavaScript for keeping records of transactions on a users debi
 
 </details>
 
-------------------------------------------------------------------------------------------
 
-<!-- // TRANSACTION ROUTES
+------------------------------------------------------------------------------------------
+#### Reading transaction records
+<!-- router.get('/transactionsType', TransactionController.getTransactionsByType); -->
+
+<details>
+ <summary><code>GET</code> <code><b>/transactionsType</b></code> </summary>
+
+##### Query Parameters
+
+> | name | type | data type | request location | description |
+> | ---- | ---- | --------- | ---------------- |------------ |
+> | transactions | not required, default all | string | header | the type of transaction to request (debit, credit, all) |
+
+
+##### Responses
+
+> | http code | content-type | response |
+> | --------- | ------------ | -------- |
+> | `201` | `application/json` | `{transactions}` |
+> | `400` | `application/json` | `{"message":"Bad Request"}` |
+> | `500` | `application/json` | `{"error": "Internal Server Error", "message": error }` |
+
+##### Example request
+`localhost:3001/api/transactionsType?type=credit`
+
+##### Example response
+> ```javascript
+>{
+>    "transactions": [{
+>            "tranid": 8,
+>            "transaction_date": "2023-11-25",
+>            "destination": "060 Veith Pass",
+>            "debit": 739.64,
+>            "credit": 240.62,
+>            "balance": 458.42,
+>            "category": "entertainment"
+>        },
+>        {
+>            "tranid": 9,
+>            "transaction_date": "2023-08-31",
+>            "destination": "71 Division Junction",
+>            "debit": 726.87,
+>            "credit": 762.03,
+>            "balance": 24.89,
+>            "category": "utilities"
+>        },
+>    ]
+>}
+>> ```
+
+</details>
+
+
+<!-- routes to define
 
 // read operations
 router.get('/transactionsType', TransactionController.getTransactionsByType);
