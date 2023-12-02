@@ -3,16 +3,6 @@
 
 const Transaction = require('../models/transactionModel');
 
-
-// function standardCallback(error, results){
-//   if(error){
-//     reject(error);
-//     return;
-//   }
-//   resolve(results);
-// }
-
-
 class TransactionService {
 
   static async createTransaction(transactionData){

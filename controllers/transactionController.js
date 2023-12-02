@@ -10,7 +10,7 @@ class TransactionController {
 
     // check for transactions
     if(!transactions){
-      res.status(400).json({error: 'Bad request'});
+      res.status(400).json({message: 'Bad request'});
     }
 
     // issue a promise for each transaction
