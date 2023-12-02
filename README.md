@@ -1,5 +1,5 @@
 # financial-api
-An API written in JavaScript for keeping records of transactions on a users debit/credit card.
+An API written in JavaScript for keeping records of transactions on a users debit/credit card. Served via express.js with a MySQL database for persisten storage.
 
 #### Transactions Table
 
