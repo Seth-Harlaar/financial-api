@@ -1,5 +1,7 @@
 # financial-api
-An API written in JavaScript for keeping records of transactions on a users debit/credit card. Served via express.js with a MySQL database for persisten storage.
+An API written in JavaScript for keeping records of transactions on a users debit/credit card. Served via express.js with a MySQL database for persistent storage.
+
+The motivation for this project is to create a personal storage for all a user's transactions and to have them easily accessible via an API.
 
 Tech stack:
 - express.js
@@ -8,11 +10,11 @@ Tech stack:
 
 #### Transactions Table
 
-| id | date | destination | debit | credit | balance | category |
-| -- | ---- | ----------- | ----- | ------ | ------- | -------- |
-0|2023-01-30|ESSO CIRCLE K|23.48||640.54|gas
-1|2023-01-23|MOBILE DEPOSIT||693.24|1016.53|work
-2|2023-01-10|#259 SPORT CHEK|14.68||2693.43|hockey
+| id | date | description | debit | credit | balance | category | account |
+| -- | ---- | ----------- | ----- | ------ | ------- | -------- | ------- |
+0|2023-01-30|ESSO CIRCLE K|23.48||640.54|gas | debit card |
+1|2023-01-23|MOBILE DEPOSIT||693.24|1016.53|work | credit card | 
+2|2023-01-10|#259 SPORT CHEK|14.68||2693.43|hockey | debit card 2
 
 
 ### API reference
@@ -33,40 +35,73 @@ Tech stack:
 
 ##### Responses
 
-> | http code | content-type | response |
-> | --------- | ------------ | -------- |
-> | `201` | `text/plain;charset=UTF-8` | `Configuration created successfully` |
-> | `400` | `application/json` | `{"message":"Bad Request"}` |
-> | `500` | `application/json` | `{"error": "Internal Server Error", "message": error }` |
+> | http code | content-type | response | description |
+> | --------- | ------------ | -------- | ----------- |
+> | `201` | `josn` | `{ "createdTransactions": []}` | An array of JSON objects representing each transaction that was added to the database.
+> | `400` | `json` | `{"message":"Bad Request"}` | Incorrectly formatted response sent.
+> | `500` | `json` | `{"error": "Internal Server Error", "message": error }` | An internal error, not relavent to user.
 
 ##### Example value for transactions
 
 > ```javascript
-> [{
->   // an example debit transaciton
->   tranDate: "2023-01-30",
->   destination: "ESSO CIRCLE K",
->   debit: 60.00,
->   credit: null,
->   balance: 5540.54,
->   category: "gas"
->}, {
->   // an example credit transaciton
->    tranDate: "2023-01-23",
->    destination: "MOBILE DEPOSIT",
->    debit: null,
->    credit: 693.24,
->    balance: 8834.51,
->    category: "work"
->}]
+>{
+>    "transactions": [{
+>        // an example debit transaciton
+>        "transactionDate": "2023-01-30",
+>        "description": "ESSO CIRCLE K",
+>        "debit": 60.00,
+>        "credit": null,
+>        "balance": 5540.54,
+>        "category": "gas",
+>        "account": "debit card 1",
+>    }, {
+>        // an example credit transaciton
+>        "transactionDate": "2023-01-23",
+>        "description": "MOBILE DEPOSIT",
+>        "debit": null,
+>        "credit": 693.24,
+>        "balance": 8834.51,
+>        "category": "work"
+>        "account": "debit card 1",
+>    }]
+>}
 > ```
+
+##### Example resposne
+> ```javascript
+>{
+>    "createdTransactions": [{
+>            // The created debit transaction
+>            "tranid": 63,
+>            "transaction_date": "2023-01-30T00:00:00.000Z",
+>            "description": "ESSO CIRCLE K",
+>            "debit": 60,
+>            "credit": null,
+>            "balance": 5540.54,
+>            "category": "gas"
+>            "account": "debit card 2",
+>        },
+>        {
+>            // The created credit transaction
+>            "tranid": 64,
+>            "transaction_date": "2023-01-23T00:00:00.000Z",
+>            "description": "MOBILE DEPOSIT",
+>            "debit": null,
+>            "credit": 693.24,
+>            "balance": 8834.51,
+>            "category": "work"
+>            "account": "debit card 2",
+>        }
+>    ]
+>}
+> ```
+
 
 </details>
 
 
 ------------------------------------------------------------------------------------------
 #### Reading transaction records
-<!-- router.get('/transactionsType', TransactionController.getTransactionsByType); -->
 
 <details>
  <summary><code>GET</code> <code><b>/transactionsType</b></code> </summary>
@@ -80,9 +115,9 @@ Tech stack:
 
 ##### Responses
 
-> | http code | content-type | response |
-> | --------- | ------------ | -------- |
-> | `201` | `application/json` | `{transactions}` |
+> | http code | content-type | response | description |
+> | --------- | ------------ | -------- | ----------- |
+> | `201` | `application/json` | `{"transactions": []}` | An array of JSON objects representing the transactions that were found based on the type specified.
 > | `400` | `application/json` | `{"message":"Bad Request"}` |
 > | `500` | `application/json` | `{"error": "Internal Server Error", "message": error }` |
 
@@ -95,7 +130,7 @@ Tech stack:
 >    "transactions": [{
 >            "tranid": 8,
 >            "transaction_date": "2023-11-25",
->            "destination": "060 Veith Pass",
+>            "description": "060 Veith Pass",
 >            "debit": 739.64,
 >            "credit": 240.62,
 >            "balance": 458.42,
@@ -104,7 +139,7 @@ Tech stack:
 >        {
 >            "tranid": 9,
 >            "transaction_date": "2023-08-31",
->            "destination": "71 Division Junction",
+>            "description": "71 Division Junction",
 >            "debit": 726.87,
 >            "credit": 762.03,
 >            "balance": 24.89,
@@ -112,7 +147,7 @@ Tech stack:
 >        },
 >    ]
 >}
->> ```
+> ```
 
 </details>
 

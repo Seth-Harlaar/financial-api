@@ -4,36 +4,63 @@ const TransactionService = require('../services/transactionService');
 
 class TransactionController {
 
+
+  
+  // one get to rule them all
+  static async getTransactions(req, res){
+    const {type, startDate, endDate } = req.query;
+
+    // valide inputs
+
+    const errorFromValidator = false;
+
+    if(errorFromValidator){
+      res.status(400).json({"error": "Bad request"});
+    }
+
+    try {
+      const transactions = await TransactionService.getTransactions(type, startDate, endDate);
+      res.status(200).json({ transactions });
+
+    } catch (error){
+      res.status(500).json({ "error": 'Internal Server Error', "message": error });
+    }
+  }
+
+
+
   // create 
   static async addTransactionMultiple(req, res){
     const {transactions} = req.body;
 
     // check for transactions
     if(!transactions){
-      res.status(400).json({message: 'Bad request'});
+      res.status(400).json({"error": "Bad request"});
     }
 
     // issue a promise for each transaction
     try {
       const createdTransactions = await Promise.all(
         transactions.map(async (transaction) => {
-          await TransactionService.createTransaction(transaction);
+          return await TransactionService.createTransaction(transaction);
         })
       );
       
-      res.status(200).json({ createdTransactions });
+      res.status(201).json({ createdTransactions });
 
     } catch(error) {
-      res.status(500).json({ error: 'Internal Server Error', message: error });
+      res.status(500).json({ "error": 'Internal Server Error', "message": error });
     }
   }
 
 
   // read operations
 
+  
+
+
   // requires a "type" of either "debit" or "credit" - if none defaults to get all
   static async getTransactionsByType(req, res) {
-
     const {type} = req.query;
 
     try {
@@ -61,10 +88,10 @@ class TransactionController {
         const transactions = await TransactionService.getTransactionsBySpecificDate(type, dateString);
         res.status(200).json({ transactions });
       } catch (error) {
-        res.status(500).json({error: 'Internal Server Error', message: error });
+        res.status(500).json({"error": "Internal Server Error", "message": error });
       }
     } else {
-      res.status(400).json({error: 'Bad request'});
+      res.status(400).json({"error": "Bad request"});
     }
   }
 
@@ -77,10 +104,10 @@ class TransactionController {
         const transactions = await TransactionService.getTransactionsByRangeDate(startDate, endDate);
         res.status(200).json({ transactions });
       } catch {
-        res.status(500).json({error: 'Internal Server Error', message: error });
+        res.status(500).json({"error": "Internal Server Error", "message": error });
       }
     } else {
-      res.status(400).json({error:'Bad request'});
+      res.status(400).json({"error": "Bad request"});
     }
   }
 
@@ -89,7 +116,7 @@ class TransactionController {
     const {ids} = req.body;
 
     if(!ids){
-      res.status(400).json({error:'Bad request'});
+      res.status(400).json({"error": "Bad request"});
     }
 
     try {
@@ -102,7 +129,7 @@ class TransactionController {
       res.status(200).json({ deletedTransactions });
 
     } catch(error) {
-      res.status(500).json({ error: 'Internal Server Error', message: error });
+        res.status(500).json({"error": "Internal Server Error", "message": error });
     }
 
   }

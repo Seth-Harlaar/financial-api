@@ -15,4 +15,4 @@ app.listen(PORT, () => {
 });
 
 
-Reporter.netIncomeMonthly(9, 2023);
+// Reporter.netIncomeMonthly(9, 2023);

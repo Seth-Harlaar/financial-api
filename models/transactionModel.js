@@ -12,7 +12,7 @@ const Transaction = sequelize.define('Transaction', {
       type: DataTypes.DATE,
       allowNull: true,
     },
-    destination: {
+    description: {
       type: DataTypes.STRING(100),
       allowNull: true,
     },
@@ -32,6 +32,10 @@ const Transaction = sequelize.define('Transaction', {
       type: DataTypes.STRING(100),
       allowNull: true,
     },
+    account: {
+      type: DataTypes.STRING(50),
+      allNull: false,
+    }
   }, {
     tableName: 'transaction', 
     timestamps: false,
@@ -40,19 +44,38 @@ const Transaction = sequelize.define('Transaction', {
 
 
 
+Transaction.getTransactions = async (type, startDate, endDate) => {
+  try {
+    const transactions = await Transaction.findAll();
+    console.log(transactions);
+    return transactions;
+  } catch (error) {
+    return null;
+  }
+}
+
+
+
+
+
+
+
 // create operations
 
 Transaction.createTransaction = async (tranData, callback) => {
   try {
-    const {tranDate, dest, debit, credit, balance, category } = tranData;
+    const {transactionDate, description, debit, credit, balance, category, account } = tranData;
 
     const createdTransaction = await Transaction.create({
-      transaction_date: tranDate,
-      destination: dest,
+      transaction_date: transactionDate,
+      description: description,
       debit: debit,
       credit: credit,
       balance: balance,
-      category: category
+      category: category,
+      account: account,
+    }).then(newUser => {
+      callback(null, newUser.dataValues);
     });
 
     callback(null, createdTransaction);
@@ -63,6 +86,10 @@ Transaction.createTransaction = async (tranData, callback) => {
 
 
 // read operations
+
+
+
+
 Transaction.getAllTransactions = async (callback) => {
   try {
     const transactions = await Transaction.findAll();

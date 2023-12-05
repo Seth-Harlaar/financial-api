@@ -3,7 +3,35 @@
 
 const Transaction = require('../models/transactionModel');
 
+
+
+
 class TransactionService {
+
+
+
+
+  static getTransactions(type, startDate, endDate){
+    const transactionsResponse = new Promise((resolve, reject) => {
+      Transaction.getTransactions(type, startDate, endDate)
+        .then((results => {
+          if(results){
+            resolve(results);
+          } else {
+            reject('null');
+          }
+        }))
+        .catch((error) => {
+          console.log("(service) error from getTransactions" + error);
+        });
+    })
+
+    return transactionsResponse;
+  }
+
+
+
+
 
   static async createTransaction(transactionData){
     // input verification
@@ -22,6 +50,8 @@ class TransactionService {
       reject('no input');
     }
   }
+
+
 
 
   static async getAllTransactions() {

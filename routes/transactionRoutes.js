@@ -4,15 +4,17 @@ const TransactionController = require('../controllers/transactionController');
 
 // TRANSACTION ROUTES
 // create operations
-router.post('/transaction/multiple', TransactionController.addTransactionMultiple);
+router.post('/transaction/add', TransactionController.addTransactionMultiple);
 
 // read operations
 router.get('/transactionsType', TransactionController.getTransactionsByType);
 router.get('/transactionsSpecificDate', TransactionController.getTransactionsBySpecificDate);
 router.get('/transactionsRangeDate', TransactionController.getTransactionsByRangeDate);
 
+router.get('/transaction', TransactionController.getTransactions);
+
 // delete operations
-router.delete('/transaction/multiple', TransactionController.deleteTransactionMultiple);
+router.delete('/transaction/rm', TransactionController.deleteTransactionMultiple);
 
 // REPORT ROUTES
 
