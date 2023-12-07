@@ -33,18 +33,16 @@ class TransactionController {
   static async addTransactionMultiple(req, res){
     const {transactions} = req.body;
 
+    // code 422 for incorrect
+
     // check for transactions
     if(!transactions){
       res.status(400).json({"error": "Bad request"});
     }
 
-    // issue a promise for each transaction
+    // issue promise for uploading all transactions
     try {
-      const createdTransactions = await Promise.all(
-        transactions.map(async (transaction) => {
-          return await TransactionService.createTransaction(transaction);
-        })
-      );
+      const createdTransactions = await TransactionService.createTransactions(transactions);
       
       res.status(201).json({ createdTransactions });
 

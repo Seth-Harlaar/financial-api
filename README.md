@@ -47,7 +47,7 @@ Tech stack:
 >{
 >    "transactions": [{
 >        // an example debit transaciton
->        "transactionDate": "2023-01-30",
+>        "transaction_date": "2023-01-30",
 >        "description": "ESSO CIRCLE K",
 >        "debit": 60.00,
 >        "credit": null,
@@ -56,7 +56,7 @@ Tech stack:
 >        "account": "debit card 1",
 >    }, {
 >        // an example credit transaciton
->        "transactionDate": "2023-01-23",
+>        "transaction_date": "2023-01-23",
 >        "description": "MOBILE DEPOSIT",
 >        "debit": null,
 >        "credit": 693.24,
@@ -66,6 +66,9 @@ Tech stack:
 >    }]
 >}
 > ```
+
+
+
 
 ##### Example resposne
 > ```javascript
@@ -78,7 +81,7 @@ Tech stack:
 >            "debit": 60,
 >            "credit": null,
 >            "balance": 5540.54,
->            "category": "gas"
+>            "category": "gas",
 >            "account": "debit card 2",
 >        },
 >        {

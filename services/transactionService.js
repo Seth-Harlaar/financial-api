@@ -11,27 +11,34 @@ class TransactionService {
 
 
 
-  static getTransactions(type, startDate, endDate){
-    const transactionsResponse = new Promise((resolve, reject) => {
-      Transaction.getTransactions(type, startDate, endDate)
-        .then((results => {
-          if(results){
-            resolve(results);
-          } else {
-            reject('null');
-          }
-        }))
-        .catch((error) => {
-          console.log("(service) error from getTransactions" + error);
-        });
-    })
-
-    return transactionsResponse;
+  static async getTransactions(type, startDate, endDate){
+    try {
+      const transactionResults = await Transaction.getTransactions(type, startDate, endDate);
+      return transactionResults;
+    
+    } catch (error){
+      console.log("(service) error from getTransactions" + error);
+      throw new error(error);
+    }
   }
 
 
 
+  static async createTransactions(transactionsData){
+    if(transactionsData){
 
+      try {
+        const results = await Transaction.createTransactions(transactionsData);
+        return results;
+
+      } catch (error) {
+        console.log("(service) error from createTransactions" + error);
+      }
+
+    } else {
+      return null;
+    }
+  }
 
   static async createTransaction(transactionData){
     // input verification

@@ -50,7 +50,8 @@ Transaction.getTransactions = async (type, startDate, endDate) => {
     console.log(transactions);
     return transactions;
   } catch (error) {
-    return null;
+    console.log();
+    
   }
 }
 
@@ -61,6 +62,21 @@ Transaction.getTransactions = async (type, startDate, endDate) => {
 
 
 // create operations
+Transaction.createTransactions = async (tranData, account ) => {
+  try {
+    const createdTransactions = await Transaction.bulkCreate(
+      tranData.map((transaction) => {
+        return {...transaction, "acount": account}
+      })
+    );
+    console.log(createdTransactions);
+    return this.createdTransactions;
+
+  } catch (error){
+    console.log("(model) error when created multiple transactions: " + error);
+  }
+}
+
 
 Transaction.createTransaction = async (tranData, callback) => {
   try {
