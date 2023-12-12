@@ -5,12 +5,10 @@ const TransactionService = require('../services/transactionService');
 class TransactionController {
 
 
-
   // *******************************************
-  // ****     The model request flow         ***
+  // ***         Create operations           ***
   // *******************************************
 
-  // create 
   static async addTransactionMultiple(req, res){
     const {transactions} = req.body;
     const {account} = req.query;
@@ -37,20 +35,24 @@ class TransactionController {
 
 
 
+  // *******************************************
+  // ***          Get operations             ***
+  // *******************************************
 
-
-
-  
   // one get to rule them all
   static async getTransactions(req, res){
-    const {type, startDate, endDate} = req.query;
-    const {account} = req.query;
+    const {type, startDate, endDate, account} = req.query;
+    
+    if(!account){
+      res.status(400).json({"error": "Bad request"});
+      return;
+    }
 
     // valide inputs
     const errorFromValidator = false;
 
     if(errorFromValidator){
-      res.status(400).json({"error": "Bad request"});
+      res.status(422).json({"error": "Invalid request query format"});
       return;
     }
 
@@ -65,65 +67,9 @@ class TransactionController {
 
 
 
-
-
-  // read operations
-
-  
-
-
-  // requires a "type" of either "debit" or "credit" - if none defaults to get all
-  static async getTransactionsByType(req, res) {
-    const {type} = req.query;
-
-    try {
-      let transactions;
-      
-      if(type == "debit" || type == "credit"){
-        transactions = await TransactionService.getTransactionsByType(type);
-      } else {
-        // default to all transactions instead of error
-        transactions = await TransactionService.getAllTransactions();
-      }
-
-      res.status(200).json({ transactions });
-    } catch (error) {
-      res.status(500).json({ error: 'Internal Server Error', message: error });
-    }
-  }
-
-  static async getTransactionsBySpecificDate(req, res){
-    const {type, dateString} = req.query;
-
-    // type must match and dateString must be there
-    if(type == "day" || type == "month" || type == "year" && dateString){
-      try {
-        const transactions = await TransactionService.getTransactionsBySpecificDate(type, dateString);
-        res.status(200).json({ transactions });
-      } catch (error) {
-        res.status(500).json({"error": "Internal Server Error", "message": error });
-      }
-    } else {
-      res.status(400).json({"error": "Bad request"});
-    }
-  }
-
-  static async getTransactionsByRangeDate(req, res){
-    const {startDate, endDate} = req.query;
-
-    // one must be present
-    if(startDate || endDate){
-      try {
-        const transactions = await TransactionService.getTransactionsByRangeDate(startDate, endDate);
-        res.status(200).json({ transactions });
-      } catch {
-        res.status(500).json({"error": "Internal Server Error", "message": error });
-      }
-    } else {
-      res.status(400).json({"error": "Bad request"});
-    }
-  }
-
+  // *******************************************
+  // ***         Delete operations           ***
+  // *******************************************
 
   static async deleteTransactionMultiple(req, res){
     const {ids} = req.body;
@@ -149,4 +95,7 @@ class TransactionController {
   }
 }
 
+
+
+// exports
 module.exports = TransactionController;

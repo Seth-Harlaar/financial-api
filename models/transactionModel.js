@@ -1,6 +1,12 @@
 const { DataTypes, Op } = require('sequelize');
 const sequelize = require('../dbConfig');
 
+
+
+// *******************************************
+// ***          Model Definition           ***
+// *******************************************
+
 const Transaction = sequelize.define('Transaction', {
     tranid: {
       type: DataTypes.INTEGER,
@@ -43,7 +49,10 @@ const Transaction = sequelize.define('Transaction', {
 
 
 
-// create operations
+// *******************************************
+// ***         Create operations           ***
+// *******************************************
+
 Transaction.createTransactions = async (tranData, account) => {
   try {
     const createdTransactions = await Transaction.bulkCreate(
@@ -63,212 +72,78 @@ Transaction.createTransactions = async (tranData, account) => {
 
 
 
+// *******************************************
+// ***          Get operations             ***
+// *******************************************
 
-Transaction.getTransactions = async (type, startDate, endDate) => {
-  try {
-    const transactions = await Transaction.findAll();
-    console.log(transactions);
-    return transactions;
-  } catch (error) {
-    console.log();
-    
-  }
-}
+Transaction.getTransactions = async (type, inputStartDate, inputEndDate, inputAccount) => {
 
+  const searchParams = {};
 
-
-
-
-
-
-
-
-
-Transaction.createTransaction = async (tranData, callback) => {
-  try {
-    const {transactionDate, description, debit, credit, balance, category, account } = tranData;
-
-    const createdTransaction = await Transaction.create({
-      transaction_date: transactionDate,
-      description: description,
-      debit: debit,
-      credit: credit,
-      balance: balance,
-      category: category,
-      account: account,
-    }).then(newUser => {
-      callback(null, newUser.dataValues);
-    });
-
-    callback(null, createdTransaction);
-  } catch (error) {
-    callback(error, null);
-  }
-}
-
-
-// read operations
-
-
-
-
-Transaction.getAllTransactions = async (callback) => {
-  try {
-    const transactions = await Transaction.findAll();
-    callback(null, transactions);
-  } catch (error) {
-    callback(error, null);
-  }
-};
-
-Transaction.getDebitTransactions = async (callback) => {
-  try {
-    const debits = await Transaction.findAll({
-      where: {
+  // select by type
+  if(type){
+    if(type === "debit"){
+      searchParams.where = {...searchParams.where, 
         debit: {
-          [Op.not]: null,
+          [Op.not]: null
         }
-      }
-    });
-    callback(null, debits);
-  } catch (error) {
-    callback(error, null);
-  }
-}
-
-Transaction.getCreditTransactions = async (callback) => {
-  try {
-    const credits = await Transaction.findAll({
-        where: {
-          credit: {
-            [Op.not]: null,
-          }
-      }
-    });
-    callback(null, credits);
-  } catch (error) {
-    callback(error, null);
-  }
-}
-
-Transaction.getTransactionsByDay = async (date, callback) => {
-  try {
-    // create dates that surround the entire day
-    const startDate = new Date(date);
-    const endDate = new Date(new Date(date).setDate(startDate.getDate() + 1));
-
-    const dayTransactions = await Transaction.findAll({
-      where: {
-        transaction_date: {
-          [Op.between]: [startDate, endDate]
+      };
+    
+    } else if (type === "credit"){
+      searchParams.where = {...searchParams.where, 
+        credit: {
+          [Op.not]: null
         }
-      }
-    });
-    callback(null, dayTransactions);
-  } catch (error) {
-    callback(error, null);
-  }
-}
-
-Transaction.getTransactionsByMonth = async (month, year, callback) => {
-  try {
-    const monthTransactions = await Transaction.findAll({
-      where: {
-        [Op.and] : [
-          sequelize.where(sequelize.fn('MONTH', sequelize.col('transaction_date')), month),
-          sequelize.where(sequelize.fn('YEAR', sequelize.col('transaction_date')), year),
-        ],
-      },
-    });
-
-    if (callback === "function" ){
-      callback(null, monthTransactions);
-    } else {
-      return monthTransactions;
-    }
-
-  } catch (error) {
-    if (callback === "function"){
-      callback(error, null);
-    } else {
-      return null;
+      };
     }
   }
-}
 
-Transaction.getTransactionsByYear = async (year, callback) => {
-  try {
-    const yearTransactions = await Transaction.findAll({
-      where: sequelize.where(sequelize.fn('YEAR', sequelize.col('transaction_date')), year),
-    });
+  // select by date
+  // modify start and end dates to normalize to time 0
+  const startDate = new Date(inputStartDate);
+  const endDate = new Date(inputEndDate);
 
-    callback(null, yearTransactions);
-  } catch (error) {
-    callback(error, null);
-  }
-}
-
-Transaction.getTransactionBetweenDates = async (inputStartDate, inputEndDate, callback) => {
-  try {
-    // normalize times to 0
-    const startDate = new Date(inputStartDate);
-    const endDate = new Date(inputEndDate);
-
-    const betweenTransactions = await Transaction.findAll({
-      where: {
-        transaction_date: {
-          [Op.between]: [startDate, endDate]
-        }
-      }
-    })
-
-    callback(null, betweenTransactions);
-  } catch (error) {
-    callback(error, null);
-  }
-}
-
-Transaction.getTransactionsAfterDate = async (inputStartDate, callback) => {
-  try {
-    // normalize time to 0
-    const startDate = new Date(inputStartDate);
-
-    const afterTransactions = await Transaction.findAll({
-      where: {
-        transaction_date: {
-          [Op.gte]: startDate,
-        },
+  if(inputStartDate){
+    searchParams.where = {...searchParams.where,
+      transaction_date: {
+        [Op.gte]: startDate,
       },
-    })
-
-    callback(null, afterTransactions);
-  } catch (error) {
-    callback(error, null);
+    }
   }
-}
 
-
-Transaction.getTransactionsBeforeDate = async (inputEndDate, callback) => {
-  try {
-    // normalize time to 0
-    const endDate = new Date(inputEndDate);
-
-    const beforeTransactions = await Transaction.findAll({
-      where: {
-        transaction_date: {
-          [Op.lte]: endDate,
-        },
+  if(inputEndDate){
+    searchParams.where = {...searchParams.where,
+      transaction_date: {
+        [Op.lte]: endDate,
       },
-    })
+    }
+  }
 
-    callback(null, beforeTransactions);
+  // required search by account
+  searchParams.where = {...searchParams.where, account: inputAccount};
+
+  try {
+    const {count, rows} = await Transaction.findAndCountAll(searchParams);
+
+    console.log(count + " found:");
+    console.log(rows);
+
+    return {
+      "count": count,
+      "transactions": rows
+    };
+    
   } catch (error) {
-    callback(error, null);
+    throw new Error("(model) Error while getting transactions: " + error.message);
   }
 }
 
 
-// delete operations
+
+// *******************************************
+// ***         Delete operations           ***
+// *******************************************
+
 Transaction.deleteTransaction = async (id, callback) => {
   try {
     const deleted = await Transaction.destroy({
@@ -284,4 +159,6 @@ Transaction.deleteTransaction = async (id, callback) => {
 }
 
 
+
+// export
 module.exports = Transaction;
