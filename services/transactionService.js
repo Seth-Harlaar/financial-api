@@ -10,6 +10,29 @@ class TransactionService {
 
 
 
+  static async createTransactions(transactionsData, account){
+    // check if the account is one of the accounts on the server first
+
+    if(!transactionsData){
+      throw new Error("(Service) Transaction data could not be found");
+    }
+
+    if(!account){
+      throw new Error("(Service) Specified account could not be found");
+    }
+
+    try {
+      const results = await Transaction.createTransactions(transactionsData, account);
+      return results;
+
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+
+
+
 
   static async getTransactions(type, startDate, endDate){
     try {
@@ -21,44 +44,6 @@ class TransactionService {
       throw new error(error);
     }
   }
-
-
-
-  static async createTransactions(transactionsData){
-    if(transactionsData){
-
-      try {
-        const results = await Transaction.createTransactions(transactionsData);
-        return results;
-
-      } catch (error) {
-        console.log("(service) error from createTransactions" + error);
-      }
-
-    } else {
-      return null;
-    }
-  }
-
-  static async createTransaction(transactionData){
-    // input verification
-
-    if(transactionData){
-      return new Promise((resolve, reject) => {
-        Transaction.createTransaction(transactionData, (error, results)=>{
-          if(error) {
-            reject(error);
-            return;
-          }
-          resolve(results);
-        })
-      })
-    } else {
-      reject('no input');
-    }
-  }
-
-
 
 
   static async getAllTransactions() {

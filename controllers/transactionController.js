@@ -5,51 +5,66 @@ const TransactionService = require('../services/transactionService');
 class TransactionController {
 
 
-  
-  // one get to rule them all
-  static async getTransactions(req, res){
-    const {type, startDate, endDate } = req.query;
 
-    // valide inputs
-
-    const errorFromValidator = false;
-
-    if(errorFromValidator){
-      res.status(400).json({"error": "Bad request"});
-    }
-
-    try {
-      const transactions = await TransactionService.getTransactions(type, startDate, endDate);
-      res.status(200).json({ transactions });
-
-    } catch (error){
-      res.status(500).json({ "error": 'Internal Server Error', "message": error });
-    }
-  }
-
-
+  // *******************************************
+  // ****     The model request flow         ***
+  // *******************************************
 
   // create 
   static async addTransactionMultiple(req, res){
     const {transactions} = req.body;
+    const {account} = req.query;
 
-    // code 422 for incorrect
+    // code 422 for incorrect values
 
     // check for transactions
-    if(!transactions){
+    if(!transactions || !account){
       res.status(400).json({"error": "Bad request"});
+      return;
     }
 
     // issue promise for uploading all transactions
     try {
-      const createdTransactions = await TransactionService.createTransactions(transactions);
+      const createdTransactions = await TransactionService.createTransactions(transactions, account);
       
       res.status(201).json({ createdTransactions });
 
     } catch(error) {
-      res.status(500).json({ "error": 'Internal Server Error', "message": error });
+      console.log(error);
+      res.status(500).json({ "error": "Internal Server Error", "message": error.message });
     }
   }
+
+
+
+
+
+
+  
+  // one get to rule them all
+  static async getTransactions(req, res){
+    const {type, startDate, endDate} = req.query;
+    const {account} = req.query;
+
+    // valide inputs
+    const errorFromValidator = false;
+
+    if(errorFromValidator){
+      res.status(400).json({"error": "Bad request"});
+      return;
+    }
+
+    try {
+      const transactions = await TransactionService.getTransactions(type, startDate, endDate, account);
+      res.status(200).json({ transactions });
+
+    } catch (error){
+      res.status(500).json({ "error": "Internal Server Error", "message": error.message });
+    }
+  }
+
+
+
 
 
   // read operations
@@ -115,6 +130,7 @@ class TransactionController {
 
     if(!ids){
       res.status(400).json({"error": "Bad request"});
+      return;
     }
 
     try {

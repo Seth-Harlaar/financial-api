@@ -10,7 +10,7 @@ const Transaction = sequelize.define('Transaction', {
     },
     transaction_date: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
     },
     description: {
       type: DataTypes.STRING(100),
@@ -34,12 +34,32 @@ const Transaction = sequelize.define('Transaction', {
     },
     account: {
       type: DataTypes.STRING(50),
-      allNull: false,
+      allowNull: false,
     }
   }, {
     tableName: 'transaction', 
     timestamps: false,
 });
+
+
+
+// create operations
+Transaction.createTransactions = async (tranData, account) => {
+  try {
+    const createdTransactions = await Transaction.bulkCreate(
+      tranData.map((transaction) => {
+        const newTransaction = {...transaction, "account": account};
+        console.log(newTransaction);
+        return {...transaction, "account": account}
+      })
+    );
+
+    return createdTransactions;
+
+  } catch (error){
+    throw new Error("(model) Error while creating transactions: " + error.message);
+  }
+}
 
 
 
@@ -61,21 +81,7 @@ Transaction.getTransactions = async (type, startDate, endDate) => {
 
 
 
-// create operations
-Transaction.createTransactions = async (tranData, account ) => {
-  try {
-    const createdTransactions = await Transaction.bulkCreate(
-      tranData.map((transaction) => {
-        return {...transaction, "acount": account}
-      })
-    );
-    console.log(createdTransactions);
-    return this.createdTransactions;
 
-  } catch (error){
-    console.log("(model) error when created multiple transactions: " + error);
-  }
-}
 
 
 Transaction.createTransaction = async (tranData, callback) => {
