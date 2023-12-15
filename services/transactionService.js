@@ -46,7 +46,7 @@ class TransactionService {
     const validAccount = true;
 
     if(!validAccount){
-      throw new Error("(service) The request account could not be found");
+      throw new Error("(service) That account could not be found");
     }
     
     try {
@@ -58,26 +58,42 @@ class TransactionService {
     }
   }
 
+  // *******************************************
+  // ***         Update operations           ***
+  // *******************************************
+
+  static async updateTransactions(idsToUpdate, tranData){
+    
+    try {
+      const updateTransactions = await Transaction.updateTransactions(idsToUpdate, tranData);
+      return updateTransactions;
+
+    } catch (error){
+      throw new Error(error);
+    }
+  }
+
 
 
   // *******************************************
   // ***         Delete operations           ***
   // *******************************************
 
-  static async deleteTransaction(id){
-    if(id){
-      return new Promise((resolve, reject) => {
-        Transaction.deleteTransaction(id, (error, results)=>{
-          if(error) {
-            reject(error);
-            return;
-          }
-          resolve(results);
-        });
-      })
-    } else {
-      reject('no input');
+  static async deleteTransactions(idsToDelete, account){
+    
+    if(idsToDelete.length <= 0){
+      throw new Error("(service) no input ids were found");
     }
+
+    try {
+      const deletedTransactions = await Transaction.deleteTransactions(idsToDelete, account);
+      return deletedTransactions;
+
+    } catch (error){
+      throw new Error(error);
+    }
+
+
   }
 }
 

@@ -53,7 +53,6 @@ Tech stack:
 >        "credit": null,
 >        "balance": 5540.54,
 >        "category": "gas",
->        "account": "debit card 1",
 >    }, {
 >        // an example credit transaciton
 >        "transaction_date": "2023-01-23",
@@ -62,7 +61,6 @@ Tech stack:
 >        "credit": 693.24,
 >        "balance": 8834.51,
 >        "category": "work"
->        "account": "debit card 1",
 >    }]
 >}
 > ```
@@ -70,7 +68,7 @@ Tech stack:
 
 
 
-##### Example resposne
+##### Example response
 > ```javascript
 >{
 >    "createdTransactions": [{
@@ -138,6 +136,7 @@ Tech stack:
 >            "credit": 240.62,
 >            "balance": 458.42,
 >            "category": "entertainment"
+>            "account": "debit card 2",
 >        },
 >        {
 >            "tranid": 9,
@@ -147,6 +146,7 @@ Tech stack:
 >            "credit": 762.03,
 >            "balance": 24.89,
 >            "category": "utilities"
+>            "account": "debit card 2",
 >        },
 >    ]
 >}

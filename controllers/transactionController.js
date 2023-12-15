@@ -68,11 +68,35 @@ class TransactionController {
 
 
   // *******************************************
+  // ***        Update operations            ***
+  // *******************************************
+
+  static async udpateTransactionsMultiple(req, res){
+    const {ids, newTrans} = req.body;
+
+    if(!ids || !newTrans){
+      res.status(400).json({"error": "Bad request"});
+      return;
+    }
+
+    try {
+      const updatedTransactions = await TransactionService.updateTransactions(ids, newTrans);
+      res.status(200).json({updatedTransactions});
+
+    } catch (error){
+      res.status(500).json({"error": "Internal Server Error", "message": error.message });
+    }
+  }
+
+
+
+  // *******************************************
   // ***         Delete operations           ***
   // *******************************************
 
   static async deleteTransactionMultiple(req, res){
     const {ids} = req.body;
+    const {account} = req.query;
 
     if(!ids){
       res.status(400).json({"error": "Bad request"});
@@ -80,18 +104,12 @@ class TransactionController {
     }
 
     try {
-      const deletedTransactions = await Promise.all(
-        ids.map(async (id) => {
-          await TransactionService.deleteTransaction(id);
-        })
-      );
-      
+      const deletedTransactions = await TransactionService.deleteTransactions(ids, account);
       res.status(200).json({ deletedTransactions });
 
     } catch(error) {
-        res.status(500).json({"error": "Internal Server Error", "message": error });
+      res.status(500).json({"error": "Internal Server Error", "message": error.message });
     }
-
   }
 }
 

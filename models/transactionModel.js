@@ -1,6 +1,6 @@
 const { DataTypes, Op } = require('sequelize');
 const sequelize = require('../dbConfig');
-
+const ResourceCompare = require('../util/compare');
 
 
 // *******************************************
@@ -8,7 +8,7 @@ const sequelize = require('../dbConfig');
 // *******************************************
 
 const Transaction = sequelize.define('Transaction', {
-    tranid: {
+    tranId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -58,7 +58,6 @@ Transaction.createTransactions = async (tranData, account) => {
     const createdTransactions = await Transaction.bulkCreate(
       tranData.map((transaction) => {
         const newTransaction = {...transaction, "account": account};
-        console.log(newTransaction);
         return {...transaction, "account": account}
       })
     );
@@ -125,9 +124,6 @@ Transaction.getTransactions = async (type, inputStartDate, inputEndDate, inputAc
   try {
     const {count, rows} = await Transaction.findAndCountAll(searchParams);
 
-    console.log(count + " found:");
-    console.log(rows);
-
     return {
       "count": count,
       "transactions": rows
@@ -141,20 +137,78 @@ Transaction.getTransactions = async (type, inputStartDate, inputEndDate, inputAc
 
 
 // *******************************************
+// ***         Update operations           ***
+// *******************************************
+
+Transaction.updateTransactions = async (idsToUpdate, tranData) => {
+  try {
+    let updatedRows = 0;
+    let i = 0;
+
+    while( i < idsToUpdate.length ){
+      // find the transaction first to check for existence and check changes being made
+      const {count, rows} = await Transaction.findAndCountAll({
+        where: {
+          tranId: idsToUpdate[i]
+        }
+      });
+
+      const tranToUpdate = rows[0].dataValues;
+
+      // check for complete match
+      const match = ResourceCompare.transactionsEqual(tranData[i], tranToUpdate);
+
+      if(match){
+        throw new Error(`The update information for transaction with ID ${idsToUpdate[i]} was not different from the current record.`);
+      }
+
+      if (count === 0){
+        throw new Error(`Transaction with ID ${idsToUpdate[i]} could not be found.`);
+      }
+
+      const updatedRow = await Transaction.update(tranData[i], {
+        where: {
+          tranId: idsToUpdate[i]
+        }
+      });
+      
+      if(updatedRow[0] === 1){
+        updatedRows++;
+      } else {
+        throw new Error(`Transaction with ID ${idsToUpdate[i]} could not be updated.`);
+      }
+
+      i++;
+    }
+
+    return updatedRows;
+
+  } catch (error) {
+    throw new Error("(model) Error while updating transactions: " + error.message);
+  }
+}
+
+// *******************************************
 // ***         Delete operations           ***
 // *******************************************
 
-Transaction.deleteTransaction = async (id, callback) => {
+Transaction.deleteTransactions = async (idsToDelete, inputAccount) => {
   try {
     const deleted = await Transaction.destroy({
       where: {
-        tranid: id,
+        tranId: idsToDelete,
+        account: inputAccount,
       }
-    })
+    });
 
-    callback(null, deleted);
-  } catch (error){
-    callback(error, null);
+    if(deleted === 0){
+      throw new Error("No matching rows found for that account.");
+    }
+
+    return deleted;
+    
+  } catch (error) {
+    throw new Error("(model) Error while deleting transactions: " + error.message);
   }
 }
 

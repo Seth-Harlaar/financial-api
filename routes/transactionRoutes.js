@@ -14,6 +14,9 @@ router.post('/transaction/add', TransactionController.addTransactionMultiple);
 // read operations
 router.get('/transaction', TransactionController.getTransactions);
 
+// update operations
+router.put('/transaction/update', TransactionController.udpateTransactionsMultiple);
+
 // delete operations
 router.delete('/transaction/rm', TransactionController.deleteTransactionMultiple);
 
