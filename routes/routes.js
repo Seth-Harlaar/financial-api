@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const TransactionController = require('../controllers/transactionController');
+const AccountController = require('../controllers/accountController');
 
 
 
@@ -20,6 +21,15 @@ router.put('/transaction/update', TransactionController.udpateTransactionsMultip
 // delete operations
 router.delete('/transaction/rm', TransactionController.deleteTransactionMultiple);
 
+
+// *******************************************
+// ***           Account Routes            ***
+// *******************************************
+
+router.post('/account/add', AccountController.addAccount);
+
+router.get('/account', AccountController.getAccount);
+router.get('/account/group', AccountController.getAccountByGroup);
 
 
 // exports

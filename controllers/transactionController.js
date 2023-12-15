@@ -21,14 +21,13 @@ class TransactionController {
       return;
     }
 
-    // issue promise for uploading all transactions
+    // try to create the transactions
     try {
       const createdTransactions = await TransactionService.createTransactions(transactions, account);
       
       res.status(201).json({ createdTransactions });
 
     } catch(error) {
-      console.log(error);
       res.status(500).json({ "error": "Internal Server Error", "message": error.message });
     }
   }

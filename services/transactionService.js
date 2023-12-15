@@ -16,13 +16,19 @@ class TransactionService {
   
   static async createTransactions(transactionsData, account){
     // check if the account is one of the accounts on the server first
-
+    
     if(!transactionsData){
       throw new Error("(service) Transaction data could not be found");
     }
-
+    
     if(!account){
       throw new Error("(service) Specified account could not be found");
+    }
+    
+    const validAccount = true;
+
+    if(!validAccount){
+      throw new Error("(service) That account could not be found");
     }
 
     try {
