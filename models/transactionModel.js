@@ -38,9 +38,13 @@ const Transaction = sequelize.define('Transaction', {
       type: DataTypes.STRING(100),
       allowNull: true,
     },
-    account: {
-      type: DataTypes.STRING(50),
+    accountId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: 'Account', 
+        key: 'accountId', 
+      },
     }
   }, {
     tableName: 'transaction', 
@@ -53,12 +57,13 @@ const Transaction = sequelize.define('Transaction', {
 // ***         Create operations           ***
 // *******************************************
 
-Transaction.createTransactions = async (tranData, account) => {
+Transaction.createTransactions = async (tranData, accountId) => {
   try {
     const createdTransactions = await Transaction.bulkCreate(
       tranData.map((transaction) => {
-        const newTransaction = {...transaction, "account": account};
-        return {...transaction, "account": account}
+        const newTransaction = {...transaction, accountId: accountId};
+        console.log(newTransaction);
+        return {...transaction, accountId: accountId};
       })
     );
 
@@ -75,7 +80,7 @@ Transaction.createTransactions = async (tranData, account) => {
 // ***          Get operations             ***
 // *******************************************
 
-Transaction.getTransactions = async (type, inputStartDate, inputEndDate, inputAccount) => {
+Transaction.getTransactions = async (type, inputStartDate, inputEndDate, inputAccountId) => {
 
   const searchParams = {};
 
@@ -119,7 +124,7 @@ Transaction.getTransactions = async (type, inputStartDate, inputEndDate, inputAc
   }
 
   // required search by account
-  searchParams.where = {...searchParams.where, account: inputAccount};
+  searchParams.where = {...searchParams.where, accountId: inputAccountId};
 
   try {
     const {count, rows} = await Transaction.findAndCountAll(searchParams);
@@ -146,21 +151,12 @@ Transaction.updateTransactions = async (idsToUpdate, tranData) => {
     let i = 0;
 
     while( i < idsToUpdate.length ){
-      // find the transaction first to check for existence and check changes being made
-      const {count, rows} = await Transaction.findAndCountAll({
+      // count matching ids
+      const count = await Transaction.count({
         where: {
           tranId: idsToUpdate[i]
         }
       });
-
-      const tranToUpdate = rows[0].dataValues;
-
-      // check for complete match
-      const match = ResourceCompare.transactionsEqual(tranData[i], tranToUpdate);
-
-      if(match){
-        throw new Error(`The update information for transaction with ID ${idsToUpdate[i]} was not different from the current record.`);
-      }
 
       if (count === 0){
         throw new Error(`Transaction with ID ${idsToUpdate[i]} could not be found.`);
@@ -192,12 +188,12 @@ Transaction.updateTransactions = async (idsToUpdate, tranData) => {
 // ***         Delete operations           ***
 // *******************************************
 
-Transaction.deleteTransactions = async (idsToDelete, inputAccount) => {
+Transaction.deleteTransactions = async (idsToDelete, inputAccountId) => {
   try {
     const deleted = await Transaction.destroy({
       where: {
         tranId: idsToDelete,
-        account: inputAccount,
+        accountId: inputAccountId,
       }
     });
 

@@ -38,17 +38,17 @@ class AccountController {
   // for getting a specific account
   static async getAccount(req, res){
     
-    const {accountTitle} = req.query;
+    const {accountId} = req.query;
 
     // check for required information
-    if(!accountTitle){
+    if(!accountId){
       res.status(400).json({"error": "Bad request"});
       return;
     }
 
     // try to create the account
     try {
-      const foundAccount = await AccountService.getAccount(accountTitle);
+      const foundAccount = await AccountService.getAccount(accountId);
       res.status(201).json({foundAccount});
       
     } catch (error) {
@@ -73,7 +73,57 @@ class AccountController {
       res.status(500).json({ "error": "Internal Server Error", "message": error.message });
     }
   }
+  
+  
+  
+  // *******************************************
+  // ***         Update operations           ***
+  // *******************************************
+
+  static async updateAccount(req, res){
+    const {accountId} = req.query;
+    const {accountData} = req.body;
+
+    // check for required information
+    if(!accountId || !accountData){
+      res.status(400).json({"error": "Bad request"});
+    }
+
+    try {
+      const updatedAccount = await AccountService.updateAccount(accountId, accountData);
+      res.status(201).json({updatedAccount});
+      
+    } catch (error) {
+      res.status(500).json({ "error": "Internal Server Error", "message": error.message });
+    }
+  }
+  
+  
+  
+  // *******************************************
+  // ***         Delete operations           ***
+  // *******************************************
+
+  static async deleteAccount(req, res){
+    const {accountId} = req.query;
+
+    // check for required information
+    if(!accountId){
+      res.status(400).json({"error": "Bad request"});
+    }
+
+    try {
+      const deletedAccount = await AccountService.deleteAccount(accountId);
+      res.status(201).json({deletedAccount});
+      
+    } catch (error) {
+      res.status(500).json({ "error": "Internal Server Error", "message": error.message });
+    }
+  }
 }
+
+
+
 
 
 

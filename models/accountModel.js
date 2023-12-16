@@ -8,7 +8,7 @@ const sequelize = require('../dbConfig');
 // *******************************************
 
 const Account = sequelize.define('Account', {
-    accountid: {
+    accountId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -50,11 +50,11 @@ Account.createAccount = async (inputTitle, inputGroup) => {
 // ***          Get operations             ***
 // *******************************************
 
-Account.getAccount = async (accountTitleToFind) => {
+Account.getAccount = async (accountId) => {
   try {
     const foundAccounts = await Account.findAll({
       where: {
-        title: accountTitleToFind
+        accountId: accountId
       }
     });
 
@@ -75,10 +75,55 @@ Account.getGroupAccounts = async (accountGroupToFind) => {
     return foundAccounts;
 
   } catch (error) {
-    throw new Error(`(model) Error while finding accounts in group : ${accountGroupToFind}` + error.message);
+    throw new Error(`(model) Error while finding accounts in group ${accountGroupToFind}: ` + error.message);
   }
 }
 
 
+
+// *******************************************
+// ***         Update operations           ***
+// *******************************************
+
+Account.updateAccount = async (accountToUpdateId, accountData) => {
+  try {
+    const updatedAccount = await Account.update(accountData, {
+      where: {
+        accountId: accountToUpdateId
+      }
+    });
+
+    return updatedAccount;
+  } catch (error){
+    throw new Error(`(model) Error while updating account with ID ${accountToUpdateId}: ` + error.message);
+  }
+}
+
+
+
+// *******************************************
+// ***         Delete operations           ***
+// *******************************************
+
+Account.deleteAccount = async (accountToDeleteId) => {
+
+  try {
+    const deleted = await Account.destroy({
+      where: {
+        accountId: accountToDeleteId
+      }
+    });
+
+    if(deleted === 0){
+      throw new Error("No account found mathcing that ID.");
+    }
+
+    return deleted;
+    
+  } catch (error) {
+    throw new Error("(model) Error while deleting account: " + error.message);
+  }
+
+}
 
 module.exports = Account;

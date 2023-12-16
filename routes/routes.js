@@ -22,14 +22,25 @@ router.put('/transaction/update', TransactionController.udpateTransactionsMultip
 router.delete('/transaction/rm', TransactionController.deleteTransactionMultiple);
 
 
+
 // *******************************************
 // ***           Account Routes            ***
 // *******************************************
 
+// create operations
 router.post('/account/add', AccountController.addAccount);
 
+// read operations
 router.get('/account', AccountController.getAccount);
 router.get('/account/group', AccountController.getAccountByGroup);
+
+// update operations
+router.put('/account/update', AccountController.updateAccount);
+
+// delete operations
+router.delete('/account/rm', AccountController.deleteAccount);
+
+
 
 
 // exports

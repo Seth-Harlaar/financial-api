@@ -11,19 +11,19 @@ class TransactionController {
 
   static async addTransactionMultiple(req, res){
     const {transactions} = req.body;
-    const {account} = req.query;
+    const {accountId} = req.query;
 
     // code 422 for incorrect values
 
     // check for transactions
-    if(!transactions || !account){
+    if(!transactions || !accountId){
       res.status(400).json({"error": "Bad request"});
       return;
     }
 
     // try to create the transactions
     try {
-      const createdTransactions = await TransactionService.createTransactions(transactions, account);
+      const createdTransactions = await TransactionService.createTransactions(transactions, accountId);
       
       res.status(201).json({ createdTransactions });
 
@@ -40,9 +40,9 @@ class TransactionController {
 
   // one get to rule them all
   static async getTransactions(req, res){
-    const {type, startDate, endDate, account} = req.query;
+    const {type, startDate, endDate, accountId} = req.query;
     
-    if(!account){
+    if(!accountId){
       res.status(400).json({"error": "Bad request"});
       return;
     }
@@ -56,7 +56,7 @@ class TransactionController {
     }
 
     try {
-      const transactions = await TransactionService.getTransactions(type, startDate, endDate, account);
+      const transactions = await TransactionService.getTransactions(type, startDate, endDate, accountId);
       res.status(200).json({ transactions });
 
     } catch (error){
@@ -95,7 +95,7 @@ class TransactionController {
 
   static async deleteTransactionMultiple(req, res){
     const {ids} = req.body;
-    const {account} = req.query;
+    const {accountId} = req.query;
 
     if(!ids){
       res.status(400).json({"error": "Bad request"});
@@ -103,7 +103,7 @@ class TransactionController {
     }
 
     try {
-      const deletedTransactions = await TransactionService.deleteTransactions(ids, account);
+      const deletedTransactions = await TransactionService.deleteTransactions(ids, accountId);
       res.status(200).json({ deletedTransactions });
 
     } catch(error) {

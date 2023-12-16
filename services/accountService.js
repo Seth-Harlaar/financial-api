@@ -1,4 +1,5 @@
 const Account = require("../models/accountModel");
+const TransactionService = require("./transactionService");
 
 
 
@@ -34,11 +35,12 @@ class AccountService {
   }
   
 
+
   // *******************************************
   // ***          Get operations             ***
   // *******************************************
 
-  static async getAccount(accountTitle){
+  static async getAccount(accountId){
     // validate the input data
     const validInput = true;
 
@@ -47,7 +49,7 @@ class AccountService {
     }
 
     try {
-      const foundAccount = await Account.getAccount(accountTitle);
+      const foundAccount = await Account.getAccount(accountId);
       return foundAccount;
 
     } catch (error) {
@@ -71,7 +73,75 @@ class AccountService {
       throw new Error(error);
     }
   }
+
+
+
+  // *******************************************
+  // ***         Update operations           ***
+  // *******************************************
+
+  static async updateAccount(accountId, accountData){
+    // validate the input data
+    const validInput = true;
+
+    if(!validInput){
+      throw new Error("(service) Account group information is incorrectly formatted.");
+    }
+
+    const uniqueAccountTitle = true;
+
+    if(!uniqueAccountTitle){
+      throw new Error("(service) That account name is already in use");
+    }
+
+    try {
+      const updatedAccount = await Account.updateAccount(accountId, accountData);
+      return updatedAccount;
+
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+
+
+  // *******************************************
+  // ***         Delete operations           ***
+  // *******************************************
+
+  static async deleteAccount(accountId){
+    
+    // find all transactions related
+    const accountTransactions = await TransactionService.getTransactions(null, null, null, accountId);
+
+    let deletedTransactions = 0;
+    if(accountTransactions.count !== 0){
+      const idsToDelete = accountTransactions.transactions.map((transaction) => {
+        return transaction.dataValues.tranId;
+      });
+
+      deletedTransactions = await TransactionService.deleteTransactions(idsToDelete, accountId);
+    }
+
+    try {
+      const deletedAccount = await Account.deleteAccount(accountId);
+      return {
+        "transactionsDeleted": deletedTransactions,
+        "accountDeleted": deletedAccount,
+      };
+
+    } catch (error){
+      throw new Error(error);
+    }
+  }
 }
+
+
+
+
+
+
+
 
 
 

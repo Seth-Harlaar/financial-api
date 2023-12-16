@@ -2,6 +2,7 @@
 // service layer to keep the controller lean and focused on managing requests.
 
 const Transaction = require('../models/transactionModel');
+const AccountService = require('./accountService');
 
 
 
@@ -14,25 +15,25 @@ class TransactionService {
   // ***         Create operations           ***
   // *******************************************
   
-  static async createTransactions(transactionsData, account){
+  static async createTransactions(transactionsData, accountId){
     // check if the account is one of the accounts on the server first
     
     if(!transactionsData){
       throw new Error("(service) Transaction data could not be found");
     }
     
-    if(!account){
-      throw new Error("(service) Specified account could not be found");
+    if(!accountId){
+      throw new Error("(service) Account id could not be found");
     }
     
-    const validAccount = true;
+    const validAccount = await AccountService.getAccount(accountId);
 
     if(!validAccount){
-      throw new Error("(service) That account could not be found");
+      throw new Error("(service) Requested account could not be found");
     }
 
     try {
-      const results = await Transaction.createTransactions(transactionsData, account);
+      const results = await Transaction.createTransactions(transactionsData, accountId);
       return results;
 
     } catch (error) {
@@ -46,17 +47,17 @@ class TransactionService {
   // ***          Get operations             ***
   // *******************************************
 
-  static async getTransactions(type, startDate, endDate, account){
+  static async getTransactions(type, startDate, endDate, accountId){
     // check that the account is a valid account if not throw service error
 
-    const validAccount = true;
+    const validAccount = await AccountService.getAccount(accountId);
 
-    if(!validAccount){
+    if(validAccount.length !== 1){
       throw new Error("(service) That account could not be found");
     }
     
     try {
-      const transactionResults = await Transaction.getTransactions(type, startDate, endDate, account);
+      const transactionResults = await Transaction.getTransactions(type, startDate, endDate, accountId);
       return transactionResults;
     
     } catch (error){
@@ -85,14 +86,14 @@ class TransactionService {
   // ***         Delete operations           ***
   // *******************************************
 
-  static async deleteTransactions(idsToDelete, account){
+  static async deleteTransactions(idsToDelete, accountId){
     
     if(idsToDelete.length <= 0){
       throw new Error("(service) no input ids were found");
     }
 
     try {
-      const deletedTransactions = await Transaction.deleteTransactions(idsToDelete, account);
+      const deletedTransactions = await Transaction.deleteTransactions(idsToDelete, accountId);
       return deletedTransactions;
 
     } catch (error){
