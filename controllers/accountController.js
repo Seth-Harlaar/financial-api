@@ -22,7 +22,7 @@ class AccountController {
     // try to create the account
     try {
       const createdAccount = await AccountService.createAccount(title, group);
-      res.status(201).json({createdAccount});
+      res.status(201).json({"account": createdAccount});
       
     } catch (error) {
       res.status(500).json({ "error": "Internal Server Error", "message": error.message });

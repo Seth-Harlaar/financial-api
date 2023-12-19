@@ -34,7 +34,7 @@ router.post('/account/add', AccountController.addAccount);
 router.get('/account', AccountController.getAccount);
 router.get('/account/group', AccountController.getAccountByGroup);
 
-// update operations
+// update operations - only one account at a time
 router.put('/account/update', AccountController.updateAccount);
 
 // delete operations
