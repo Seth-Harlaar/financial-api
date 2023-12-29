@@ -102,8 +102,7 @@ describe('PUT /api/account/update', () => {
 
     // checks
     expect(response.body).toHaveProperty('updatedAccount');
-    expect(Array.isArray(response.body.updatedAccount)).toBe(true);
-    expect(response.body.updatedAccount.includes(1)).toBe(true);
+    expect(response.body.updatedAccount).toBe(1);
 
   });
 });

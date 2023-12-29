@@ -93,7 +93,7 @@ Account.updateAccount = async (accountToUpdateId, accountData) => {
       }
     });
 
-    return updatedAccount;
+    return updatedAccount[0];
   } catch (error){
     throw new Error(`(model) Error while updating account with ID ${accountToUpdateId}: ` + error.message);
   }
@@ -123,7 +123,6 @@ Account.deleteAccount = async (accountToDeleteId) => {
   } catch (error) {
     throw new Error("(model) Error while deleting account: " + error.message);
   }
-
 }
 
 module.exports = Account;

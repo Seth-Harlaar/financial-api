@@ -22,6 +22,8 @@ Tech stack:
 
 **All api requests must be prefeced by the /api/ endpoint.**
 
+### Transaction Endpoints
+
 #### Creating new transaction records
 
 <details>
@@ -155,13 +157,24 @@ Tech stack:
 </details>
 
 
-<!-- routes to define
 
-// read operations
-router.get('/transactionsType', TransactionController.getTransactionsByType);
-router.get('/transactionsSpecificDate', TransactionController.getTransactionsBySpecificDate);
-router.get('/transactionsRangeDate', TransactionController.getTransactionsByRangeDate);
 
-// delete operations
-router.delete('/transaction/multiple', TransactionController.deleteTransactionMultiple);
- -->
+
+
+### Account Endpoints
+
+#### Making accounts
+
+<details>
+ <summary><code>POST</code> <code><b>/account/add</b></code> </summary>
+
+##### Query Parameters
+
+> | name | reuqired? | data type | request location | description |
+> | ---- | ---- | --------- | ---------------- |------------ |
+> | title | required | string | header | the type of transaction to request (debit, credit, all) |
+> | group | not required, default undefined | string | header | the type of transaction to request (debit, credit, all) |
+
+
+
+</details>
