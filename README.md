@@ -354,3 +354,41 @@ With the body:
 
 
 
+
+
+#### Deleting accounts
+
+<details>
+ <summary><code>DELETE</code> <code><b>/account/rm</b></code> </summary>
+
+
+##### Query Parameters
+> | name | required | data type | description |
+> | ---- | -------- | --------- | ----------- |
+> | accountId | yes | int | the account to delete |
+
+
+
+##### Responses
+
+> | http code | content-type | response | description |
+> | --------- | ------------ | -------- | ----------- |
+> | `201` | `application/json` | `{"deletedAccount": {"transactionsDeleted":0,"accountDeleted":1}}` | A JSON object describing the number of transactions deleted from the account and the account deleted |
+
+
+##### Example request
+`localhost:3001/api/account/rm?accountId=1`
+
+
+##### Example response
+```javascript
+{
+  "deletedAccount": {
+    "transactionsDeleted": "2",
+    "accountDeleted": "1"
+  }    
+}
+```
+
+</details>
+
