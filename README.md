@@ -18,30 +18,34 @@ Tech stack:
 
 
 ### API reference
-------------------------------------------------------------------------------------------
+---
 
 **All api requests must be prefeced by the /api/ endpoint.**
 
 ### Transaction Endpoints
+
+
+
+
+
 
 #### Creating new transaction records
 
 <details>
  <summary><code>POST</code> <code><b>/transactions/multiple</b></code> </summary>
 
-##### Parameters
+##### Request Body
 
-> | name | type | data type | request location | description |
+> | name | required | data type | request location | description |
 > | ---- | ---- | --------- | ---------------- |------------ |
-> | transactions |  required | JSON object | body | An array of JSON objects representing each transaction to be added to the database |
+> | transactions |  yes | JSON object | body | An array of JSON objects representing each transaction to be added to the database |
 
 ##### Responses
 
 > | http code | content-type | response | description |
 > | --------- | ------------ | -------- | ----------- |
 > | `201` | `josn` | `{ "createdTransactions": []}` | An array of JSON objects representing each transaction that was added to the database.
-> | `400` | `json` | `{"message":"Bad Request"}` | Incorrectly formatted response sent.
-> | `500` | `json` | `{"error": "Internal Server Error", "message": error }` | An internal error, not relavent to user.
+
 
 ##### Example value for transactions
 
@@ -66,9 +70,6 @@ Tech stack:
 >    }]
 >}
 > ```
-
-
-
 
 ##### Example response
 > ```javascript
@@ -102,8 +103,13 @@ Tech stack:
 
 </details>
 
+---
 
-------------------------------------------------------------------------------------------
+
+
+
+
+
 #### Reading transaction records
 
 <details>
@@ -111,9 +117,9 @@ Tech stack:
 
 ##### Query Parameters
 
-> | name | type | data type | request location | description |
-> | ---- | ---- | --------- | ---------------- |------------ |
-> | transactions | not required, default all | string | header | the type of transaction to request (debit, credit, all) |
+> | name | type | data type | description |
+> | ---- | ---- | --------- | ----------- |
+> | transactions | not required, default all | string | the type of transaction to request (debit, credit, all) |
 
 
 ##### Responses
@@ -121,8 +127,7 @@ Tech stack:
 > | http code | content-type | response | description |
 > | --------- | ------------ | -------- | ----------- |
 > | `201` | `application/json` | `{"transactions": []}` | An array of JSON objects representing the transactions that were found based on the type specified.
-> | `400` | `application/json` | `{"message":"Bad Request"}` |
-> | `500` | `application/json` | `{"error": "Internal Server Error", "message": error }` |
+
 
 ##### Example request
 `localhost:3001/api/transactionsType?type=credit`
@@ -159,9 +164,13 @@ Tech stack:
 
 
 
-
+---
 
 ### Account Endpoints
+
+
+
+
 
 #### Making accounts
 
@@ -170,11 +179,178 @@ Tech stack:
 
 ##### Query Parameters
 
-> | name | reuqired? | data type | request location | description |
-> | ---- | ---- | --------- | ---------------- |------------ |
-> | title | required | string | header | the type of transaction to request (debit, credit, all) |
-> | group | not required, default undefined | string | header | the type of transaction to request (debit, credit, all) |
+> | name | required | data type | description |
+> | ---- | -------- | --------- | ----------- |
+> | title | yes | string | the name of the account to be created |
+> | group | no, default undefined | string | the group of accounts the account will belong to |
 
 
+##### Responses
+
+> | http code | content-type | response | description |
+> | --------- | ------------ | -------- | ----------- |
+> | `201` | `application/json` | `{"account": {}}` | A JSON object representing the account just created. |
+
+
+##### Example request
+`localhost:3001/api/account/add?title=new acc`
+
+##### Example response
+```javascript
+{
+  "account": {
+      "group": "undefined",
+      "accountId": 4,
+      "title": "new acc"
+  }
+}
+```
 
 </details>
+
+
+
+
+#### Updating Accounts
+
+<details>
+ <summary><code>PUT</code> <code><b>/account/update</b></code> </summary>
+
+
+##### Query Parameters
+
+> | name | required | data type | description |
+> | ---- | -------- | --------- | ----------- |
+> | title | no | string | the title to update the account to |
+> | group | no | string | the group to update the account to |
+
+
+##### Responses
+
+> | http code | content-type | response | description |
+> | --------- | ------------ | -------- | ----------- |
+> | `201` | `application/json` | `{"updatedAccount": 1}` | A value representing if changes were made (1) or not (0) |
+
+
+##### Example request
+`localhost:3001/api/account/update?accountId=1`
+
+With the body:
+```javascript
+{
+  "accountData": {
+    "title": "new account name",
+    "group": "new group name"
+  }
+}
+```
+
+##### Example response
+```javascript
+{
+    "updatedAccount": 1
+}
+```
+
+</details>
+
+
+
+
+
+
+
+
+
+
+#### Getting accounts
+
+<details>
+ <summary><code>GET</code> <code><b>/account/</b></code> </summary>
+
+
+##### Query Parameters
+> | name | required | data type | description |
+> | ---- | -------- | --------- | ----------- |
+> | accountId | yes | int | the id of the account to get |
+
+
+
+##### Responses
+
+> | http code | content-type | response | description |
+> | --------- | ------------ | -------- | ----------- |
+> | `201` | `application/json` | `{"foundAccount": {}}` | A JSON object representing the account found. |
+
+
+##### Example request
+`localhost:3001/api/account/?accountId=1`
+
+
+##### Example response
+```javascript
+{
+  "foundAccount": {
+      "group": "undefined",
+      "accountId": 4,
+      "title": "new acc"
+  }
+}
+```
+
+</details>
+
+
+
+
+
+
+
+
+
+<details>
+ <summary><code>GET</code> <code><b>/account/group</b></code> </summary>
+
+
+##### Query Parameters
+> | name | required | data type | description |
+> | ---- | -------- | --------- | ----------- |
+> | group | yes | int | the group to find accounts with |
+
+
+
+##### Responses
+
+> | http code | content-type | response | description |
+> | --------- | ------------ | -------- | ----------- |
+> | `201` | `application/json` | `{"foundAccounts": []}` | A JSON object with an array of the accounts found |
+
+
+##### Example request
+`localhost:3001/api/account/group?group=Sample group 1`
+
+
+##### Example response
+```javascript
+{
+  "foundAccounts": [
+    {
+        "group": "Sample group 1",
+        "accountId": 3,
+        "title": "new acc"
+    },
+    {
+        "group": "Sample group 1",
+        "accountId": 4,
+        "title": "second acc"
+    }
+  ]
+}
+```
+
+</details>
+
+
+
+
+

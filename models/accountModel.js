@@ -95,6 +95,10 @@ Account.updateAccount = async (accountToUpdateId, accountData) => {
 
     return updatedAccount[0];
   } catch (error){
+    if(error.name === "SequelizeUniqueConstraintError"){
+      throw new Error(`(model) ${error.message}. The title ${accountData.title} is already in use`);
+    }
+
     throw new Error(`(model) Error while updating account with ID ${accountToUpdateId}: ` + error.message);
   }
 }

@@ -1,8 +1,8 @@
 // Complex checks involving business logic or multiple steps are better handled in the 
 // service layer to keep the controller lean and focused on managing requests.
 
+const Account = require('../models/accountModel');
 const Transaction = require('../models/transactionModel');
-const AccountService = require('./accountService');
 
 
 
@@ -26,7 +26,7 @@ class TransactionService {
       throw new Error("(service) Account id could not be found");
     }
     
-    const validAccount = await AccountService.getAccount(accountId);
+    const validAccount = await Account.getAccount(accountId);
 
     if(!validAccount){
       throw new Error("(service) Requested account could not be found");
@@ -50,7 +50,7 @@ class TransactionService {
   static async getTransactions(type, startDate, endDate, accountId){
     // check that the account is a valid account if not throw service error
 
-    const validAccount = await AccountService.getAccount(accountId);
+    const validAccount = await Account.getAccount(accountId);
 
     if(validAccount.length !== 1){
       throw new Error("(service) That account could not be found");

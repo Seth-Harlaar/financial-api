@@ -1,5 +1,5 @@
 const Account = require("../models/accountModel");
-const TransactionService = require("./transactionService");
+const Transaction = require("../models/transactionModel");
 
 
 
@@ -112,7 +112,8 @@ class AccountService {
   static async deleteAccount(accountId){
     
     // find all transactions related
-    const accountTransactions = await TransactionService.getTransactions(null, null, null, accountId);
+    // const accountTransactions = await TransactionService.getTransactions(null, null, null, accountId);
+    const accountTransactions = await Transaction.getTransactions(null, null, null, accountId);
 
     let deletedTransactions = 0;
     if(accountTransactions.count !== 0){
@@ -120,7 +121,7 @@ class AccountService {
         return transaction.dataValues.tranId;
       });
 
-      deletedTransactions = await TransactionService.deleteTransactions(idsToDelete, accountId);
+      deletedTransactions = await Transaction.deleteTransactions(idsToDelete, accountId);
     }
 
     try {
